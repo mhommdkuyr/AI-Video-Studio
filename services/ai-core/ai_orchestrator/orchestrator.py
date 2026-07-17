@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
 from command_parser.parser import SimpleCommandParser
-from command_schema.models import Command, CommandValidationResult, ExecutionStatus
+from command_schema.models import Command, CommandStatus, CommandValidationResult
 from command_validator.validator import CommandValidator, PermissionContext
 
 
@@ -51,10 +51,10 @@ class AIOrchestrator:
                 status="blocked",
             )
 
-        command.execution_status = ExecutionStatus.PLANNED
+        command.status = CommandStatus.PLANNED
         return OrchestrationResult(
             command=command,
             validation_result=validation_result,
             plan=plan,
-            status="planned",
+            status="planned"
         )

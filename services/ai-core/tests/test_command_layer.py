@@ -3,10 +3,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from command_schema.models import ApprovalState, Command, CommandAsset, CommandOperation, ExecutionStatus
+from command_schema.models import ApprovalState, Command, MediaAsset, CommandOperation, CommandStatus
 from command_parser.parser import CommandParsingError, SimpleCommandParser
 from command_validator.validator import PermissionContext, ValidationIssue, CommandValidator
 from ai_orchestrator.orchestrator import AIOrchestrator
+from models.media import MediaType
 
 
 def test_command_creation_supports_core_fields():
@@ -15,12 +16,12 @@ def test_command_creation_supports_core_fields():
         session_id="session-001",
         actor_id="user-001",
         intent="edit",
-        assets=[CommandAsset(id="asset-001", type="clip", name="intro")],
+        assets=[MediaAsset(id="asset-001", type=MediaType.VIDEO, name="intro")],
         operations=[CommandOperation(id="op-001", type="transform", parameters={"preset": "social-short"})],
         parameters={"target_length": 12},
         confidence=0.82,
         approval_state=ApprovalState.REVIEW,
-        execution_status=ExecutionStatus.PLANNED,
+        status=CommandStatus.PLANNED,
     )
 
     assert command.intent == "edit"
@@ -36,7 +37,7 @@ def test_validator_accepts_valid_commands_and_rejects_missing_required_fields():
         session_id="session-002",
         actor_id="user-002",
         intent="export",
-        assets=[CommandAsset(id="asset-002", type="timeline")],
+        assets=[MediaAsset(id="asset-002", type=MediaType.TIMELINE)],
         operations=[CommandOperation(id="op-002", type="export")],
         confidence=0.9,
     )
@@ -88,7 +89,7 @@ def test_parser_and_validator_handle_errors_gracefully():
         session_id="session-004",
         actor_id="user-004",
         intent="export",
-        assets=[CommandAsset(id="asset-004", type="timeline")],
+        assets=[MediaAsset(id="asset-004", type=MediaType.TIMELINE)],
         operations=[CommandOperation(id="op-004", type="export")],
         confidence=0.75,
     )

@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
-from command_schema.models import ApprovalState, Command, CommandValidationResult, ExecutionStatus, ValidationIssue
+from command_schema.models import ApprovalState, Command, CommandValidationResult, CommandStatus, ValidationIssue
 
 
 @dataclass(slots=True)
@@ -45,7 +45,7 @@ class CommandValidator:
         if requires_approval and permission_context is not None and not permission_context.can_approve:
             issues.append(ValidationIssue(code="approval_required", message="approval is required for this command"))
 
-        if command.execution_status in {ExecutionStatus.EXECUTING, ExecutionStatus.COMPLETED, ExecutionStatus.FAILED}:
+        if command.status in {CommandStatus.EXECUTING, CommandStatus.COMPLETED, CommandStatus.FAILED}:
             if not command.operations:
                 issues.append(ValidationIssue(code="invalid_execution_state", message="execution state requires operations"))
 

@@ -3,7 +3,8 @@ from __future__ import annotations
 from typing import Any, Dict, Optional
 from uuid import uuid4
 
-from command_schema.models import ApprovalState, Command, CommandAsset, CommandOperation, ExecutionStatus
+from command_schema.models import ApprovalState, Command, CommandOperation, CommandStatus, MediaAsset
+from models.media import MediaType
 
 
 class CommandParsingError(ValueError):
@@ -41,10 +42,10 @@ class SimpleCommandParser(CommandParser):
         assets = []
         asset_ids = context.get("asset_ids", []) if context else []
         for index, asset_id in enumerate(asset_ids[:3], start=1):
-            assets.append(CommandAsset(id=str(asset_id), type="clip", name=f"asset-{index}"))
+            assets.append(MediaAsset(id=str(asset_id), type=MediaType.VIDEO, name=f"asset-{index}"))
 
         if not assets:
-            assets.append(CommandAsset(id=str(uuid4()), type="timeline", name="current-project"))
+            assets.append(MediaAsset(id=str(uuid4()), type=MediaType.TIMELINE, name="current-project"))
 
         return Command(
             command_id=str(uuid4()),
@@ -56,6 +57,6 @@ class SimpleCommandParser(CommandParser):
             parameters={"source_text": normalized},
             confidence=0.72 if "clip" in lower_text or "caption" in lower_text else 0.6,
             approval_state=ApprovalState.REVIEW if "export" in lower_text else ApprovalState.AUTO,
-            execution_status=ExecutionStatus.PLANNED,
+            status=CommandStatus.PLANNED,
             metadata={"parser": "simple-heuristic", "provider": "none"},
         )
